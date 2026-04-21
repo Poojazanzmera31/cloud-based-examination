@@ -1,0 +1,119 @@
+============================================================
+  MONGODB COMMANDS TO CREATE ADMIN USER
+============================================================
+
+METHOD 1: Using MongoDB Shell
+------------------------------------------------------------
+
+1. Open Terminal and run:
+   mongosh mongodb://localhost:27017/examdb
+
+2. Run these commands in MongoDB shell:
+
+   // View all users
+   db.users.find().pretty()
+
+   // Delete all users (optional - start fresh)
+   db.users.deleteMany({})
+
+   // The admin user will be auto-created when you login
+   // Just use the login endpoint with admin/admin123
+
+3. Exit MongoDB shell:
+   exit
+
+
+METHOD 2: Using the Application API (EASIEST)
+------------------------------------------------------------
+
+The admin user is AUTOMATICALLY created when you login with:
+- Username: admin
+- Password: admin123
+
+You DON'T need to manually insert it!
+
+Just make sure:
+1. Backend is running (http://localhost:5001)
+2. MongoDB is connected
+3. Login with admin/admin123
+
+
+METHOD 3: Test Login via Terminal
+------------------------------------------------------------
+
+Run this command in terminal to test the login API:
+
+curl -X POST http://localhost:5001/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin","password":"admin123"}'
+
+Expected response:
+{
+  "success": true,
+  "data": {
+    "_id": "...",
+    "name": "Admin",
+    "email": "admin@admin.com",
+    "role": "admin",
+    "token": "jwt_token_here"
+  }
+}
+
+
+METHOD 4: View Database Collections
+------------------------------------------------------------
+
+In MongoDB shell:
+
+// Show all collections
+show collections
+
+// View all users
+db.users.find().pretty()
+
+// View user count
+db.users.countDocuments()
+
+// View admin user
+db.users.findOne({ role: "admin" })
+
+
+============================================================
+  TROUBLESHOOTING LOGIN ISSUES
+============================================================
+
+Issue: "Login failed" error
+Check:
+1. Backend running? → http://localhost:5001/api/health
+2. MongoDB connected? → Check backend terminal
+3. Correct credentials? → admin / admin123
+4. Browser console errors? → Press F12 and check Console tab
+
+Issue: Network error
+Check:
+1. Backend is running on port 5001
+2. Frontend .env has: VITE_API_URL=http://localhost:5001/api
+3. No CORS errors in browser console
+
+Issue: Token not saved
+Check:
+1. Browser localStorage (F12 → Application → Local Storage)
+2. Should have "token" and "user" keys after login
+
+
+============================================================
+  QUICK TEST COMMANDS
+============================================================
+
+// Test backend is running
+curl http://localhost:5001/api/health
+
+// Test admin login
+curl -X POST http://localhost:5001/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin","password":"admin123"}'
+
+// View MongoDB users (in mongosh)
+mongosh mongodb://localhost:27017/examdb --eval "db.users.find().pretty()"
+
+============================================================
